@@ -60,9 +60,9 @@ This README and bot is meant to be easy and straightforward to use for everyone.
 
 Code wasn't reviewed and isn't deployed in production right now. 
 
-This bot enables notifying about recent sales on Joepegs marketplace in Avalanche ecosystem. Relies heavily on Joepegs Open API, doesn't require any on-chain interaction.
+This bot enables notifying about recent sales on Joepegs marketplace on Avalanche. Relies heavily on Joepegs Open API and doesn't require any on-chain interaction.
 
-Currently supports Discord Webhook.
+Currently supports Discord webhook.
 
 Would love any feedback, insights or critique.
 
@@ -108,7 +108,7 @@ There are a lot of resources in web about securing your accounts, for example [O
 ### Prerequisites
 
 1. Acquire your API key for Joepegs Public API [here](https://joepegs.dev/)
-2. Acquire Discord Webhook for a channel of your choosing. [Discord official guide](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks)
+2. Acquire Discord webhook for a channel of your choosing. [Discord official guide](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks)
 3. Python installed locally or in cloud
 4. Not being overly scared by console
 
@@ -220,15 +220,15 @@ You can also use any other cloud service to host this script, like [Heroku](http
 Bot configuration is stored in `config.json` file. Edit it to change parameters.
 
 **general**\
-`recentSalesAmount` - Choose how many recent transactions fetch from Joepegs API in every run. Bot stores recentSalesAmount * 2 transactions in lastNotifiedTransactions.json to avoid repeating notifications. 30-50 works just fine.\
-`salesCallIntervalSeconds` - How often bot should fetch data. 60 seconds works just fine\
+`recentSalesAmount` - Choose how many recent transactions to fetch from Joepegs API in every run. Bot stores recentSalesAmount * 2 transactions in lastNotifiedTransactions.json to avoid repeating notifications. 30-50 works just fine.\
+`salesCallIntervalSeconds` - How often bot should fetch data. 60 seconds works just fine.\
 `oldestSaleToNotify` - How old should be last sale, that bot should notify about, in seconds.
 
 **channels**\
 You can add any amount of channels/webhooks that you want here.\
-`turnedOn` - decide if bot should send notifications to this Discord [true/false]\
-`envWebhookName` - if using .env file to store Webhook URL, insert variable name here [not an actual Webhook]\
-`discordBotName` - choose bot name\
+`turnedOn` - decide if bot should send notifications to this Discord [true/false].\
+`envWebhookName` - if using .env file to store webhook URL, insert variable name here [not an actual webhook].\
+`discordBotName` - choose bot name.\
 `filter` - decide if all collections should be shown, or only chosen ones. Empty list means all collections are observed. Format - list of strings: \
 `["collection address1", "collection address2", "collection address3", ...]` \
 Can be lowercase or checksummed.
