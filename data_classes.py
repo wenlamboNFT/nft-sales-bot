@@ -96,11 +96,6 @@ class EmbedData:
         if self.token_sale.verified in ["verified", "verified_trusted"]:
             self.embed_title_name = f"{self.token_sale.collectionName}"
             self.embed_thumbnail_url = constants.THUMBNAIL_URLS["verified"]
-        elif self.token_sale.verified == "blocklisted":
-            self.embed_title_name = (
-                f"{self.token_sale.collectionName} - {self.token_sale.verified}"
-            )
-            self.embed_thumbnail_url = constants.THUMBNAIL_URLS["blocklisted"]
         elif self.token_sale.verified == "unverified":
             self.embed_title_name = (
                 f"{self.token_sale.collectionName} - {self.token_sale.verified}"
@@ -110,7 +105,8 @@ class EmbedData:
             self.embed_title_name = ""
             self.embed_thumbnail_url = ""
             logger.warning(
-                "verified parameter not in [verified, verified_trusted, blocklisted, unverified]"
+                "verified parameter not in [verified, verified_trusted, unverified]. Has value = %s instead",
+                self.token_sale.verified,
             )
 
         self.sold_for_value = (

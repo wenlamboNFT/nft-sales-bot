@@ -73,7 +73,7 @@ class SaleFinderSubject:
             avax_price_in_usd = await self.api_calls.ask_thegraph_avax_price()
             if avax_price_in_usd:
                 self.avax_price_in_usd = avax_price_in_usd
-            self._choose_sales_to_notify()
+            self._choose_sales_to_get_data_about()
             await self._get_sales_data_from_joepegs()
             self._filter_and_notify()
             self._write_notified_sales_to_file()
@@ -86,20 +86,21 @@ class SaleFinderSubject:
         """
         return self.raw_sales_data[0]["id"] not in self._last_notified_transactions
 
-    def _choose_sales_to_notify(self):
-        self.sales_to_notify = [
+    def _choose_sales_to_get_data_about(self):
+        self.sales_to_get_data_about = [
             raw_sale
             for raw_sale in self.raw_sales_data
             if raw_sale["id"] not in self._last_notified_transactions
+            and raw_sale["verified"] != "blocklisted"
         ]
 
     async def _get_sales_data_from_joepegs(self):
         self.token_sale_list = []
-        sales_amount = len(self.sales_to_notify)
+        sales_amount = len(self.sales_to_get_data_about)
         max_chunk_size = 15
         if sales_amount > max_chunk_size:
             chunks = [
-                self.sales_to_notify[x : x + max_chunk_size]
+                self.sales_to_get_data_about[x : x + max_chunk_size]
                 for x in range(0, sales_amount, max_chunk_size)
             ]
             logger.debug(
@@ -117,7 +118,7 @@ class SaleFinderSubject:
         else:
             full_task_list = [
                 self._get_single_sale_data_from(raw_sale)
-                for raw_sale in self.sales_to_notify
+                for raw_sale in self.sales_to_get_data_about
             ]
             await asyncio.gather(*full_task_list)
 
