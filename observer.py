@@ -10,7 +10,7 @@ import asyncio
 
 from discord_webhook import DiscordEmbed, DiscordWebhook
 
-from data_classes import EmbedData, TokenSale
+from data_classes import EmbedData, ItemSale
 from api_calls import ApiCalls
 
 
@@ -27,17 +27,17 @@ class SaleFinderSubject:
     Manages observers and filter. Gets sales data, processes it and notifies observers.
     """
 
-    token_sale_list: list[TokenSale]
+    token_sale_list: list[ItemSale]
     raw_sales_data: dict = {}
     avax_price_in_usd: float = 0
-    sale_to_notify: TokenSale
+    sale_to_notify: ItemSale
     embed_data: EmbedData
     _observers: list[FilteredDiscordObserver] = []
     _observed_collections: list[str] = []
     _last_notified_transactions: list[str]
 
     def __init__(self) -> None:
-        with open("configs/lastNotifiedTransactions.json", encoding="UTF-8") as file:
+        with open("configs/last_notified_transactions.json", encoding="UTF-8") as file:
             self._last_notified_transactions = json.load(file)
         self.JOEPEGS_API_KEY: Optional[str] = os.getenv("JOEPEGS_API_KEY")
 
@@ -73,7 +73,7 @@ class SaleFinderSubject:
             avax_price_in_usd = await self.api_calls.ask_thegraph_avax_price()
             if avax_price_in_usd:
                 self.avax_price_in_usd = avax_price_in_usd
-            self.remove_notified_sales()
+            self.choose_sales_to_notify()
             await self.get_sales_data_from_joepegs()
             self.filter_and_notify()
             self.write_notified_sales_to_file()
@@ -86,7 +86,7 @@ class SaleFinderSubject:
         """
         return self.raw_sales_data[0]["id"] not in self._last_notified_transactions
 
-    def remove_notified_sales(self):
+    def choose_sales_to_notify(self):
         self.sales_to_notify = [
             raw_sale
             for raw_sale in self.raw_sales_data
@@ -165,7 +165,7 @@ class SaleFinderSubject:
                 return
 
         self.token_sale_list.append(
-            TokenSale(
+            ItemSale(
                 avax_price_in_usd=self.avax_price_in_usd,
                 raw_sale=raw_sale,
                 price_floor=_price_floor,
@@ -180,15 +180,16 @@ class SaleFinderSubject:
         )
 
         for sale in self.sorted_token_sale_list:
-            if self.filter_collections(sale.contractId):
-                self.sale_to_notify: TokenSale = sale  # todo
+            if self.filter_collections(sale.contract_id):
+                self.sale_to_notify: ItemSale = sale  # todo
                 self.embed = self.prepare_embed(sale)
                 self.notify()
-                self._last_notified_transactions.append(sale.transactionID)
+                self._last_notified_transactions.append(sale.transaction_id)
 
-    def filter_collections(self, contractID: str) -> bool:
+    def filter_collections(self, contract_id: str) -> bool:
         return (
-            contractID in self._observed_collections or self._observed_collections == []
+            contract_id in self._observed_collections
+            or self._observed_collections == []
         )
 
     def prepare_embed(self, sale):
@@ -227,7 +228,7 @@ class SaleFinderSubject:
         """
         logger.info(
             "Notifying observers about transaction - %s was sold",
-            self.sale_to_notify.NFTname,
+            self.sale_to_notify.item_name,
         )
 
         for observer in self._observers:
@@ -235,7 +236,7 @@ class SaleFinderSubject:
 
     def write_notified_sales_to_file(self):
         with open(
-            "configs/lastNotifiedTransactions.json", mode="w", encoding="UTF-8"
+            "configs/last_notified_transactions.json", mode="w", encoding="UTF-8"
         ) as file:
             _saving_amount = int(configs["general"]["recentSalesAmount"]) * 2
             if len(self._last_notified_transactions) > _saving_amount:
@@ -249,8 +250,8 @@ class SaleFinderSubject:
                 self._last_notified_transactions,
             )
 
-    def already_notified(self, transactionID: str) -> bool:
-        return transactionID.lower() in self._last_notified_transactions
+    def already_notified(self, transaction_id: str) -> bool:
+        return transaction_id.lower() in self._last_notified_transactions
 
 
 class FilteredDiscordObserver:
@@ -292,20 +293,20 @@ class FilteredDiscordObserver:
             username=self.credentials["discordBotName"],
         )
 
-        if self.filter_collections(subject.sale_to_notify.contractId):
+        if self.filter_collections(subject.sale_to_notify.contract_id):
             self.webhook.add_embed(subject.embed)
             response = self.webhook.execute()
             if response.status_code == 200:
                 logger.debug(
                     "%s successfully sent %s sale notification to discord",
                     self.credentials["envWebhookName"],
-                    subject.sale_to_notify.NFTname,
+                    subject.sale_to_notify.item_name,
                 )
             else:
                 logger.warning(
                     "%s failed sending %s sale notification to discord due to status code %s, response %s",
                     self.credentials["envWebhookName"],
-                    subject.sale_to_notify.NFTname,
+                    subject.sale_to_notify.item_name,
                     response.status_code,
                     response,
                 )
