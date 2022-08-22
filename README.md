@@ -1,57 +1,26 @@
-<div id="top"></div>
-<!--
-*** kudos to https://github.com/othneildrew/Best-README-Template/blob/master/BLANK_README.md for this template
--->
+# NFT Sales Bot
 
-
-
-
-
-
-<!-- PROJECT LOGO -->
-<br />
-<div align="center">
-  <a href="https://github.com/pecio222/nft-sales-bot">
-  </a>
-
-<h3 align="center">NFT Sales Bot</h3>
-
-  <p align="center">
-    Bot to notify you and your community about NFT sales on Joepegs.com!  
-  </p>
-</div>
-
+Bot to notify you and your community about NFT sales on Joepegs.com!  
 
 
 <!-- TABLE OF CONTENTS -->
-<summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-    </li>
-        <li><a href="#security">SECURITY</a></li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#local-installation">Local installation</a></li>
-        <li><a href="#cloud-installation">Cloud installation</a></li>
-        <li><a href="#other-ways">Other ways</a></li>
-        <li><a href="#configuration">Configuration</a></li>
-      </ul>
-    </li>
-    <li><a href="#tests">Tests</a></li>
-    <li><a href="#flowchart">Flowchart</a></li>
-    <li><a href="#todo">TODOs</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ol>
+## Table of Contents
+1. [About The Project](#about-the-project)
+2. [SECURITY](#security)
+3. [Getting Started](#getting-started)
+    * [Prerequisites](#prerequisites)
+    * [Local installation](#local-installation)
+    * [Cloud installation](#cloud-installation)
+    * [Other ways](#other-ways)
+    * [Configuration](#configuration)
+4. [Flowchart](#flowchart)
+5. [TODOs](#todos)
+6. [Contributing](#contributing)
+7. [License](#license)
+8. [Contact](#contact)
 
 
 
-
-<!-- ABOUT THE PROJECT -->
 ## About The Project
 
 Welcome to NFT Sales Bot v2.
@@ -69,8 +38,7 @@ Would love any feedback, insights or critique.
 Have fun!
 
 
-<p align="right">(<a href="#top">back to top</a>)</p>
-
+[Back to top](#nft-sales-bot)
 
 
 ### Built With
@@ -82,11 +50,7 @@ Have fun!
 
 
 
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- GETTING STARTED -->
+[Back to top](#nft-sales-bot)
 
 
 ## SECURITY
@@ -99,20 +63,19 @@ Accidentally uploading your webhook somewhere will have similiar effect.
 
 There are a lot of resources in web about securing your accounts, for example [OpSec SelfGuard RoadMap](https://github.com/OffcierCia/Crypto-OpSec-SelfGuard-RoadMap) by Officer CIA.
 
-
+[Back to top](#nft-sales-bot)
 
 # Getting Started
 
 
-<!-- PREREQUISITES -->
-### Prerequisites
+## Prerequisites
 
 1. Acquire your API key for Joepegs Public API [here](https://joepegs.dev/)
 2. Acquire Discord webhook for a channel of your choosing. [Discord official guide](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks)
 3. Python installed locally or in cloud
 4. Not being overly scared by console
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+[Back to top](#nft-sales-bot)
 
 
 
@@ -143,9 +106,9 @@ Use source code editor like [Visual Studio Code](https://code.visualstudio.com/)
    python .\main.py
    ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+[Back to top](#nft-sales-bot)
 
-### Cloud installation
+## Cloud installation
 
 
 Cloud installation enables you to leave this working 24/7.
@@ -202,7 +165,7 @@ If above looks confusing at first - for visual, very easy and straightforward se
 
 On free account you might get ```OSError: Tunnel connection failed: 403 Forbidden```
 
-### Other ways
+## Other ways
 
 Anything other that can run Python will suffice. You can try Raspberry Pi, your local computer, even Android phone maybe. Only problem is keeping it up 24/7.
 
@@ -210,7 +173,7 @@ You can also use any other cloud service to host this script, like [Heroku](http
 
 
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+[Back to top](#nft-sales-bot)
 
 <!-- CONFIGURATION -->
 ## Configuration
@@ -219,23 +182,32 @@ You can also use any other cloud service to host this script, like [Heroku](http
 
 Bot configuration is stored in `config.json` file. Edit it to change parameters.
 
-**general**\
-`recentSalesAmount` - Choose how many recent transactions to fetch from Joepegs API in every run. Bot stores recentSalesAmount * 2 transactions in lastNotifiedTransactions.json to avoid repeating notifications. 30-50 works just fine.\
-`salesCallIntervalSeconds` - How often bot should fetch data. 60 seconds works just fine.\
+**general**
+
+`recentSalesAmount` - Choose how many recent transactions to fetch from Joepegs API in every run. Bot stores recentSalesAmount * 2 transactions in lastNotifiedTransactions.json to avoid repeating notifications. 30-50 works just fine.
+
+`salesCallIntervalSeconds` - How often bot should fetch data. 60 seconds works just fine.
+
 `oldestSaleToNotify` - How old should be last sale, that bot should notify about, in seconds.
 
-**channels**\
+**channels**
+
 You can add any amount of channels/webhooks that you want here.\
-`turnedOn` - decide if bot should send notifications to this Discord [true/false].\
-`envWebhookName` - if using .env file to store webhook URL, insert variable name here [not an actual webhook].\
-`discordBotName` - choose bot name.\
-`filter` - decide if all collections should be shown, or only chosen ones. Empty list means all collections are observed. Format - list of strings: \
-`["collection address1", "collection address2", "collection address3", ...]` \
+`turnedOn` - decide if bot should send notifications to this Discord [true/false].
+
+`envWebhookName` - if using .env file to store webhook URL, insert variable name here [not an actual webhook].
+
+`discordBotName` - choose bot name.
+
+`filter` - decide if all collections should be shown, or only chosen ones. Empty list means all collections are observed. Format - list of strings: 
+
+`["collection address1", "collection address2", "collection address3", ...]` 
+
 Can be lowercase or checksummed.
 
 
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+[Back to top](#nft-sales-bot)
 
 
 <!-- FLOWCHARTS -->
@@ -262,7 +234,7 @@ graph TD;
     F(write_notified_sales_to_file)-->C(Wait for next cycle)
     
 ```
-<p align="right">(<a href="#top">back to top</a>)</p>
+[Back to top](#nft-sales-bot)
 
 
 <!-- TODOs -->
@@ -278,43 +250,15 @@ Known bugs/smells to handle:
 
 See the [open issues](https://github.com/pecio222/nft-sales-bot/issues) for a full list of proposed features (and known issues).
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+[Back to top](#nft-sales-bot)
 
 
-
-<!-- CONTRIBUTING -->
-## Contributing
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- LICENSE -->
 ## License
 
 Distributed under the MIT License.
 
 
-
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- CONTACT -->
 ## Contact
-
 
 [Twitter - pecio222](https://twitter.com/pecio222)
 
@@ -324,5 +268,5 @@ Distributed under the MIT License.
 
 If you want to talk about this repo, DM me, would be happy to help or chat.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+[Back to top](#nft-sales-bot)
 
