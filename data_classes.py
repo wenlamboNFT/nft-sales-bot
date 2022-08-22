@@ -4,6 +4,7 @@ import configs.constants as constants
 import json
 import logging
 import logging.config
+import urllib.parse
 
 with open("configs/log_config.json", "r", encoding="UTF-8") as stream:
     config = json.load(stream)
@@ -49,7 +50,7 @@ class ItemSale:
         self.bought_by: str = self.bought_by_full[:5] + "..." + self.bought_by_full[-4:]
 
         if self.last_sales[0]["image"]:
-            self.img_link: str = self.last_sales[0]["image"].replace(" ", "%20")
+            self.img_link: str = urllib.parse.quote(self.last_sales[0]["image"])
         else:
             self.img_link = ""
         self.collectionName: str = self.last_sales[0]["collectionName"]
