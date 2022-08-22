@@ -4,3 +4,6 @@ THUMBNAIL_URLS = {
     "verified": "https://i.imgur.com/D9X2y2V.png",
     "unverified": "https://i.imgur.com/Vnkwyv3.png",
 }
+
+# how often should AVAX price be refreshed; value in seconds
+GET_AVAX_PRICE_FREQUENCY = 300

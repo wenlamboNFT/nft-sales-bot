@@ -24,6 +24,10 @@ class ItemSale:
     last_sales: list
 
     def __post_init__(self):
+        """
+        self.last_sales is protected against being empty
+        ItemSale will not be created for items that didn't receive data
+        """
         self.sort_index = self.last_sales[0]["timestamp"]
         self.transaction_id: str = self.raw_sale["id"]
         self.contract_id: str = self.raw_sale["collection"]

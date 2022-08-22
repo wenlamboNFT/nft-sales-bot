@@ -12,6 +12,7 @@ from discord_webhook import DiscordEmbed, DiscordWebhook
 
 from data_classes import EmbedData, ItemSale
 from api_calls import ApiCalls
+import configs.constants as constants
 
 
 with open("configs/log_config.json", "r", encoding="UTF-8") as stream:
@@ -35,6 +36,7 @@ class SaleFinderSubject:
     _observers: list[FilteredDiscordObserver] = []
     _observed_collections: list[str] = []
     _last_notified_transactions: list[str]
+    last_checked_avax_price_at: float = 0
 
     def __init__(self) -> None:
         with open("configs/last_notified_transactions.json", encoding="UTF-8") as file:
@@ -70,9 +72,7 @@ class SaleFinderSubject:
 
         if self._new_sales():
             logger.debug("New sales were found")
-            avax_price_in_usd = await self.api_calls.ask_thegraph_avax_price()
-            if avax_price_in_usd:
-                self.avax_price_in_usd = avax_price_in_usd
+            await self.get_avax_price_in_usd()
             self._choose_sales_to_get_data_about()
             await self._get_sales_data_from_joepegs()
             self._filter_and_notify()
@@ -85,6 +85,19 @@ class SaleFinderSubject:
         Check if observers were notified about latest sale
         """
         return self.raw_sales_data[0]["id"] not in self._last_notified_transactions
+
+    async def get_avax_price_in_usd(self):
+        last_checked_avax_price_ago = time.time() - self.last_checked_avax_price_at
+        if last_checked_avax_price_ago > constants.GET_AVAX_PRICE_FREQUENCY:
+            avax_price_in_usd = await self.api_calls.ask_thegraph_avax_price()
+            if avax_price_in_usd:
+                self.avax_price_in_usd = avax_price_in_usd
+                self.last_checked_avax_price_at = time.time()
+                logger.debug(
+                    "Avax price = %s at %s",
+                    self.avax_price_in_usd,
+                    self.last_checked_avax_price_at,
+                )
 
     def _choose_sales_to_get_data_about(self):
         self.sales_to_get_data_about = [
