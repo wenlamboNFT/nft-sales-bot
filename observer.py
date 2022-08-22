@@ -68,39 +68,39 @@ class SaleFinderSubject:
             dict
         ] = await self.api_calls.ask_joepegs_about_recent_sales()
 
-        if self.new_sales():
+        if self._new_sales():
             logger.debug("New sales were found")
             avax_price_in_usd = await self.api_calls.ask_thegraph_avax_price()
             if avax_price_in_usd:
                 self.avax_price_in_usd = avax_price_in_usd
-            self.choose_sales_to_notify()
-            await self.get_sales_data_from_joepegs()
-            self.filter_and_notify()
-            self.write_notified_sales_to_file()
+            self._choose_sales_to_notify()
+            await self._get_sales_data_from_joepegs()
+            self._filter_and_notify()
+            self._write_notified_sales_to_file()
         else:
             logger.debug("New sales were not found")
 
-    def new_sales(self):
+    def _new_sales(self):
         """
         Check if observers were notified about latest sale
         """
         return self.raw_sales_data[0]["id"] not in self._last_notified_transactions
 
-    def choose_sales_to_notify(self):
+    def _choose_sales_to_notify(self):
         self.sales_to_notify = [
             raw_sale
             for raw_sale in self.raw_sales_data
             if raw_sale["id"] not in self._last_notified_transactions
         ]
 
-    async def get_sales_data_from_joepegs(self):
+    async def _get_sales_data_from_joepegs(self):
         self.token_sale_list = []
         sales_amount = len(self.sales_to_notify)
         max_chunk_size = 15
         if sales_amount > max_chunk_size:
             chunks = [
                 self.sales_to_notify[x : x + max_chunk_size]
-                for x in range(0, len(self.sales_to_notify), max_chunk_size)
+                for x in range(0, sales_amount, max_chunk_size)
             ]
             logger.debug(
                 "Retrieving more than %s sales at the same time - splitting API calls into %s chunks",
@@ -108,19 +108,20 @@ class SaleFinderSubject:
                 len(chunks),
             )
             for chunk in chunks:
-                smaller_task_list = []
-                for raw_sale in chunk:
-                    smaller_task_list.append(self.get_single_sale_data_from(raw_sale))
+                smaller_task_list = [
+                    self._get_single_sale_data_from(raw_sale) for raw_sale in chunk
+                ]
                 await asyncio.gather(*smaller_task_list)
                 logger.debug("Waiting to avoid rate limiting")
                 await asyncio.sleep(5)
         else:
-            full_task_list = []
-            for raw_sale in self.sales_to_notify:
-                full_task_list.append(self.get_single_sale_data_from(raw_sale))
+            full_task_list = [
+                self._get_single_sale_data_from(raw_sale)
+                for raw_sale in self.sales_to_notify
+            ]
             await asyncio.gather(*full_task_list)
 
-    async def get_single_sale_data_from(self, raw_sale):
+    async def _get_single_sale_data_from(self, raw_sale):
         task_list = [
             self.api_calls.ask_joepegs_about_sale(
                 raw_sale["collection"],
@@ -128,12 +129,11 @@ class SaleFinderSubject:
             ),
             self.api_calls.ask_joepegs_about_floor(raw_sale["collection"]),
         ]
-        start = time.perf_counter()
         try:
             async_result = await asyncio.gather(*task_list)
         except Exception:
             logger.warn(
-                "get_single_sale_data_from failed for %s",
+                "_get_single_sale_data_from failed for %s",
                 raw_sale["id"],
                 exc_info=True,
             )
@@ -173,7 +173,7 @@ class SaleFinderSubject:
             )
         )
 
-    def filter_and_notify(self):
+    def _filter_and_notify(self):
         """Sorts by timestamp, so sales are sent oldest first"""
         self.sorted_token_sale_list = sorted(
             self.token_sale_list, key=operator.attrgetter("sort_index")
@@ -182,17 +182,17 @@ class SaleFinderSubject:
         for sale in self.sorted_token_sale_list:
             if self.filter_collections(sale.contract_id):
                 self.sale_to_notify: ItemSale = sale  # todo
-                self.embed = self.prepare_embed(sale)
-                self.notify()
+                self.embed = self._prepare_embed(sale)
+                self._notify()
                 self._last_notified_transactions.append(sale.transaction_id)
 
     def filter_collections(self, contract_id: str) -> bool:
         return (
             contract_id in self._observed_collections
-            or self._observed_collections == []
+            or len(self._observed_collections) == 0
         )
 
-    def prepare_embed(self, sale):
+    def _prepare_embed(self, sale):
         embed = DiscordEmbed()
         embed_data = EmbedData(sale)
         if embed_data.image_url:
@@ -222,7 +222,7 @@ class SaleFinderSubject:
         embed.set_footer(text=embed_data.footer)
         return embed
 
-    def notify(self) -> None:
+    def _notify(self) -> None:
         """
         Trigger an update in each subscriber.
         """
@@ -234,7 +234,7 @@ class SaleFinderSubject:
         for observer in self._observers:
             observer.update(self)
 
-    def write_notified_sales_to_file(self):
+    def _write_notified_sales_to_file(self):
         with open(
             "configs/last_notified_transactions.json", mode="w", encoding="UTF-8"
         ) as file:
@@ -249,9 +249,6 @@ class SaleFinderSubject:
                 len(self._last_notified_transactions),
                 self._last_notified_transactions,
             )
-
-    def already_notified(self, transaction_id: str) -> bool:
-        return transaction_id.lower() in self._last_notified_transactions
 
 
 class FilteredDiscordObserver:
