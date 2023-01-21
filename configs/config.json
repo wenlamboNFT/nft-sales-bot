@@ -6,20 +6,19 @@
     },
     "channels": {
         "DiscordConfigExample1": {
-            "turnedOn": true,
-            "envWebhookName": "DISCORD_TEST_URL",
+            "turnedOn": false,
+            "envWebhookName": "DISCORD_TEST_URL2",
             "discordBotName": "NFT Sales Bot",
             "filter": []
         },
         "DiscordConfigExample2": {
             "turnedOn": true,
-            "envWebhookName": "DISCORD_TEST_URL2",
+            "envWebhookName": "DISCORD_TEST_URL",
             "discordBotName": "NFT Sales Bot",
             "filter": [
-                "0xc70df87e1d98f6a531c8e324c9bcec6fc82b5e8d",
-                "0x2cd4dbcbfc005f8096c22579585fb91097d8d259",
-                "0x3dd5e0f0659ca8b52925e504fe9f0250bfe68301",
-                "0x77e0459eb2fefa3c772a7fabe45c746377b1ed10"
+                "0x66F703e48F68C03FFFEE0eAee7BE2fE411cB3713",
+                "0xdAE165a6D46259E9b76882d19e9a2c90F99E2710",
+                "0x0a7137De48e650AE7Fd339Bd0Af039238537c7C0"
             ]
         }
     }
